@@ -246,6 +246,16 @@ unsigned int harmony1[] = {
   NOTE_F6, NOTE_D6, 0,0,
 };
 
+const unsigned char keypad[4][4] =
+{
+'0','1','2','3',
+'4','5','6','7',
+'8','9','A','B',
+'C','D','E','F'
+};
+
+unsigned char column,row;
+
 void COMWRT4(unsigned char);
 void DATWRT4(unsigned char);
 void MSDelay(unsigned int);
@@ -255,9 +265,23 @@ void buzz(unsigned int frequency, unsigned int length);
 //Serial Monitor uses PLL=48MHz
 void MSDelayBuzz(unsigned int itime);
 void sing(unsigned int song);
+void DisplayStr(char*);
+void CleanScr();
+void DisplayInt(unsigned int);
+void Int2Char();
+
+unsigned int freLevel = 0;
+char showFre[9];
 
 void main(void) 
 {
+    showFre[0] = 'L';
+    showFre[1] = 'E';
+    showFre[2] = 'V';
+    showFre[3] = 'E';
+    showFre[4] = 'L';
+    showFre[5] = ':';
+    showFre[8] = '\0';
 
     //init
     DDRK = 0xFF;   
@@ -276,29 +300,123 @@ void main(void)
     MSDelay(1);
     COMWRT4(0x80);  //set start posistion, home position
     MSDelay(1);
-    DATWRT4('H');
-    MSDelay(1);
-    DATWRT4('E');
-    MSDelay(1);
-    DATWRT4('L');
-    MSDelay(1);
-    DATWRT4('L');
-    MSDelay(1);
-    DATWRT4('O');
     
     //for(;;);       //stay here 
   
+    //init buzz
     DDRT = DDRT | 0b00100000;    // PTT5 as output
     
     DDRB = DDRB | 0xFF;    // PTB as output
     DDRJ = DDRJ | 0xFF;    // PTJ as output
     PTJ = PTJ & 0;
     
-    while(1) {
-      sing(1);
-      sing(2);
-      sing(1); 
-    }
+    DDRB = 0xFF;                           //MAKE PORTB OUTPUT
+   DDRJ |=0x02; 
+   PTJ &=~0x02;                            //ACTIVATE LED ARRAY ON PORT B
+   DDRP |=0x0F;                           //
+   PTP |=0x0F;                            //TURN OFF 7SEG LED
+   DDRA = 0x0F;                           //MAKE ROWS INPUT AND COLUMNS OUTPUT
+   
+   Int2Char();
+   DisplayStr(showFre);
+   
+   while(1){                              //OPEN WHILE(1)
+      do{                                 //OPEN do1
+         PORTA = PORTA | 0x0F;            //COLUMNS SET HIGH
+         row = PORTA & 0xF0;              //READ ROWS
+      }while(row == 0x00);                //WAIT UNTIL KEY PRESSED //CLOSE do1
+
+
+
+      do{                                 //OPEN do2
+         do{                              //OPEN do3
+            MSDelay(1);                   //WAIT
+            row = PORTA & 0xF0;           //READ ROWS
+         }while(row == 0x00);             //CHECK FOR KEY PRESS //CLOSE do3
+         
+         MSDelay(15);                     //WAIT FOR DEBOUNCE
+         row = PORTA & 0xF0;
+      }while(row == 0x00);                //FALSE KEY PRESS //CLOSE do2
+
+      while(1){                           //OPEN while(1)
+         PORTA &= 0xF0;                   //CLEAR COLUMN
+         PORTA |= 0x01;                   //COLUMN 0 SET HIGH
+         row = PORTA & 0xF0;              //READ ROWS
+         if(row != 0x00){                 //KEY IS IN COLUMN 0
+            column = 0;
+            break;                        //BREAK OUT OF while(1)
+         }
+         PORTA &= 0xF0;                   //CLEAR COLUMN
+         PORTA |= 0x02;                   //COLUMN 1 SET HIGH
+         row = PORTA & 0xF0;              //READ ROWS
+         if(row != 0x00){                 //KEY IS IN COLUMN 1
+            column = 1;
+            break;                        //BREAK OUT OF while(1)
+         }
+
+         PORTA &= 0xF0;                   //CLEAR COLUMN
+         PORTA |= 0x04;                   //COLUMN 2 SET HIGH
+         row = PORTA & 0xF0;              //READ ROWS
+         if(row != 0x00){                 //KEY IS IN COLUMN 2
+            column = 2;
+            break;                        //BREAK OUT OF while(1)
+         }
+         PORTA &= 0xF0;                   //CLEAR COLUMN
+         PORTA |= 0x08;                   //COLUMN 3 SET HIGH
+         row = PORTA & 0xF0;              //READ ROWS
+         if(row != 0x00){                 //KEY IS IN COLUMN 3
+            column = 3;
+            break;                        //BREAK OUT OF while(1)
+         }
+         row = 0;                         //KEY NOT FOUND
+      break;                              //step out of while(1) loop to not get stuck
+      }                                   //end while(1)
+
+      if(row == 0x10){
+         PORTB=keypad[0][column];         //OUTPUT TO PORTB LED
+         
+         //fre up
+         if(column == 0) {
+         
+            freLevel++;
+         }
+         
+         //fre down
+         else if(column == 1) {
+         
+            if(freLevel != 0)
+               freLevel--;
+         }
+         
+         //play
+         else if(column == 2) {
+            sing(1);
+            sing(2);          
+         }
+         
+         Int2Char();
+         DisplayStr(showFre);
+ 
+      }
+      else if(row == 0x20){
+         PORTB=keypad[1][column];
+ 
+      }
+      else if(row == 0x40){
+         PORTB=keypad[2][column];
+ 
+      }
+      else if(row == 0x80){
+         PORTB=keypad[3][column];
+ 
+      }
+
+      do{
+         MSDelay(15);
+         PORTA = PORTA | 0x0F;            //COLUMNS SET HIGH
+         row = PORTA & 0xF0;              //READ ROWS
+      }while(row != 0x00);                //MAKE SURE BUTTON IS NOT STILL HELD
+   }                                      //CLOSE WHILE(1)
 	
 }
 
@@ -420,6 +538,8 @@ void buzz(unsigned int frequency, unsigned int length) {
   int gap;
   long i;
   
+  frequency = frequency + freLevel*200;
+  
   if(frequency == 0) {
   
       //pause  
@@ -436,6 +556,7 @@ void buzz(unsigned int frequency, unsigned int length) {
       //// get the total number of cycles to produce
   }
   
+  //DisplayInt(frequency);
   gap = frequency/625;
   switch(gap) {
     case 0:
@@ -484,4 +605,41 @@ void buzz(unsigned int frequency, unsigned int length) {
     for(i=0;i<itime;i++)
       for(j=0;j<4;j++);
   }
+  
+void Int2Char() {
+
+    showFre[6] = freLevel/10+48;
+    showFre[7] = freLevel%10+48;
+}
+  
+void DisplayInt(unsigned int num) {
+
+    char showNum[5];
+    
+    showNum[0] = num/1000+48;
+    showNum[1] = num/100%10+48;
+    showNum[2] = num/10%10+48;
+    showNum[3] = num%10+48;
+    showNum[4] = '\0';
+    
+    DisplayStr(showNum);
+}
+
+void DisplayStr(char* str) {
+  
+  int i;
+  CleanScr();
+  
+  for(i=0; str[i]!='\0' ;++i) {
+    DATWRT4(str[i]);
+    MSDelay(1);  
+  }
+}
+
+void CleanScr() {
+  COMWRT4(0x01);  //Clear display
+  MSDelay(1);
+  COMWRT4(0x80);  //set start posistion, home position
+  MSDelay(1);  
+}
 

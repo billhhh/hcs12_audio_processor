@@ -24,8 +24,8 @@ Entry point: 0xC000 (_Startup)
 _startupData is allocated at 0xC00B and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
-  _Range   pZeroOut       0x1100     536
-  _Copy    *toCopyDownBeg 0xC130
+  _Range   pZeroOut       0x1100     549
+  _Copy    *toCopyDownBeg 0xC140
 } _startupData;
 
 *********************************************************************************************
@@ -34,9 +34,10 @@ Section Name                    Size  Type     From       To       Segment
 ---------------------------------------------------------------------------------------------
 .init                             11     R     0xC000     0xC00A   ROM_C000
 .startData                        10     R     0xC00B     0xC014   ROM_C000
-NON_BANKED                       283     R     0xC015     0xC12F   ROM_C000
-.copy                            542     R     0xC130     0xC34D   ROM_C000
-.text                            655     R   0x308000   0x30828E   PAGE_30
+.rodata                           16     R     0xC015     0xC024   ROM_C000
+NON_BANKED                       283     R     0xC025     0xC13F   ROM_C000
+.copy                            542     R     0xC140     0xC35D   ROM_C000
+.text                            997     R   0x308000   0x3083E4   PAGE_30
 .stack                           256   R/W     0x1000     0x10FF   RAM
 .data                            536   R/W     0x1100     0x1317   RAM
 .abs_section_8                     1   N/I        0x8        0x8   .absSeg0
@@ -380,11 +381,13 @@ NON_BANKED                       283     R     0xC015     0xC12F   ROM_C000
 .abs_section_17e                   2   N/I      0x17E      0x17F   .absSeg338
 .abs_section_2ae                   2   N/I      0x2AE      0x2AF   .absSeg339
 .abs_section_2be                   2   N/I      0x2BE      0x2BF   .absSeg340
+.bss                               2   R/W     0x1318     0x1319   RAM
+.common                           11   R/W     0x131A     0x1324   RAM
 .vectSeg341_vect                   2     R     0xFFFE     0xFFFF   .vectSeg341
 
 Summary of section sizes per section type:
-READ_ONLY (R):         5DF (dec:     1503)
-READ_WRITE (R/W):      318 (dec:      792)
+READ_ONLY (R):         745 (dec:     1861)
+READ_WRITE (R/W):      325 (dec:      805)
 NO_INIT (N/I):         190 (dec:      400)
 
 *********************************************************************************************
@@ -601,9 +604,9 @@ MODULE:                 -- mc9s12dg256.c.o --
      _PPSM                                      255       1       1       0   .abs_section_255
      _WOMM                                      256       1       1       0   .abs_section_256
      _MODRR                                     257       1       1       0   .abs_section_257
-     _PTP                                       258       1       1       0   .abs_section_258
+     _PTP                                       258       1       1       1   .abs_section_258
      _PTIP                                      259       1       1       0   .abs_section_259
-     _DDRP                                      25A       1       1       0   .abs_section_25a
+     _DDRP                                      25A       1       1       1   .abs_section_25a
      _RDRP                                      25B       1       1       0   .abs_section_25b
      _PERP                                      25C       1       1       0   .abs_section_25c
      _PPSP                                      25D       1       1       0   .abs_section_25d
@@ -617,9 +620,9 @@ MODULE:                 -- mc9s12dg256.c.o --
      _PPSH                                      265       1       1       0   .abs_section_265
      _PIEH                                      266       1       1       0   .abs_section_266
      _PIFH                                      267       1       1       0   .abs_section_267
-     _PTJ                                       268       1       1       2   .abs_section_268
+     _PTJ                                       268       1       1       3   .abs_section_268
      _PTIJ                                      269       1       1       0   .abs_section_269
-     _DDRJ                                      26A       1       1       2   .abs_section_26a
+     _DDRJ                                      26A       1       1       3   .abs_section_26a
      _RDRJ                                      26B       1       1       0   .abs_section_26b
      _PERJ                                      26C       1       1       0   .abs_section_26c
      _PPSJ                                      26D       1       1       0   .abs_section_26d
@@ -682,8 +685,8 @@ MODULE:                 -- mc9s12dg256.c.o --
      _CAN4TXDSR7                                2BB       1       1       0   .abs_section_2bb
      _CAN4TXDLR                                 2BC       1       1       0   .abs_section_2bc
      _CAN4TXTBPR                                2BD       1       1       0   .abs_section_2bd
-     _PORTAB                                      0       2       2       1   .abs_section_0
-     _DDRAB                                       2       2       2       2   .abs_section_2
+     _PORTAB                                      0       2       2      14   .abs_section_0
+     _DDRAB                                       2       2       2       4   .abs_section_2
      _PARTID                                     1A       2       2       0   .abs_section_1a
      _TCNT                                       44       2       2       0   .abs_section_44
      _TC0                                        50       2       2       0   .abs_section_50
@@ -751,26 +754,34 @@ MODULE:                 -- Start12.c.o --
      __SEG_END_SSTACK                          1100       0       0       1               
 MODULE:                 -- rtshc12.c.o (ansibi.lib) --
 - PROCEDURES:
-     _LINC                                     C015       5       5       1   NON_BANKED  
-     _lDivMod                                  C01A      BE     190       2   NON_BANKED  
-     _NEG_P                                    C0D8       F      15       4   NON_BANKED  
-     _LDIVS                                    C0E7      35      53       1   NON_BANKED  
-     _CASE_CHECKED_BYTE                        C11C      14      20       1   NON_BANKED  
+     _LINC                                     C025       5       5       1   NON_BANKED  
+     _lDivMod                                  C02A      BE     190       2   NON_BANKED  
+     _NEG_P                                    C0E8       F      15       4   NON_BANKED  
+     _LDIVS                                    C0F7      35      53       1   NON_BANKED  
+     _CASE_CHECKED_BYTE                        C12C      14      20       1   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- audio_processor_main.c.o --
 - PROCEDURES:
-     main                                    308029      84     132       2   .text       
-     COMWRT4                                 3080AD      4B      75       4   .text       
-     DATWRT4                                 3080F8      4B      75       4   .text       
-     MSDelay                                 308143      1F      31      10   .text       
-     sing                                    308162      6D     109       6   .text       
-     buzz                                    3081CF      A1     161       2   .text       
-     MSDelayBuzz                             308270      1F      31       6   .text       
+     main                                    308029     168     360      20   .text       
+     COMWRT4                                 308191      4B      75       8   .text       
+     DATWRT4                                 3081DC      4B      75       2   .text       
+     MSDelay                                 308227      1F      31      12   .text       
+     sing                                    308246      6D     109       4   .text       
+     buzz                                    3082B3      AA     170       2   .text       
+     MSDelayBuzz                             30835D      1F      31       6   .text       
+     Int2Char                                30837C      1D      29       2   .text       
+     DisplayStr                              308399      31      49       2   .text       
+     CleanScr                                3083CA      1B      27       2   .text       
 - VARIABLES:
+     keypad                                    C015      10      16       4   .rodata     
      melody                                    1100      9C     156       1   .data       
      tempo                                     119C      9C     156       1   .data       
      underworld_melody                         1238      70     112       1   .data       
      underworld_tempo                          12A8      70     112       1   .data       
+     freLevel                                  1318       2       2       7   .bss        
+     column                                    131A       1       1       6   .common     
+     row                                       131B       1       1       3   .common     
+     showFre                                   131C       9       9       7   .common     
 
 *********************************************************************************************
 MODULE STATISTIC
@@ -779,18 +790,23 @@ MODULE STATISTIC
   mc9s12dg256.c.o                            400      0      0
   Start12.c.o                                  0     52      0
   rtshc12.c.o (ansibi.lib)                     0    283      0
-  audio_processor_main.c.o                   536    614      0
+  audio_processor_main.c.o                   549    956     16
   other                                      256     12    542
 
 *********************************************************************************************
 SECTION USE IN OBJECT-ALLOCATION SECTION
 ---------------------------------------------------------------------------------------------
 SECTION: ".text"
-  Init main COMWRT4 DATWRT4 MSDelay sing buzz MSDelayBuzz 
+  Init main COMWRT4 DATWRT4 MSDelay sing buzz MSDelayBuzz Int2Char DisplayStr 
+  CleanScr 
 SECTION: ".data"
   melody tempo underworld_melody underworld_tempo 
+SECTION: ".bss"
+  freLevel 
 SECTION: ".init"
   _Startup 
+SECTION: ".rodata"
+  keypad 
 SECTION: "NON_BANKED"
   _LINC _lDivMod _NEG_P _LDIVS _CASE_CHECKED_BYTE 
 SECTION: ".abs_section_8"
@@ -1475,13 +1491,15 @@ SECTION: ".abs_section_2ae"
   _CAN4RXTSR 
 SECTION: ".abs_section_2be"
   _CAN4TXTSR 
+SECTION: ".common"
+  column row showFre 
 
 *********************************************************************************************
 OBJECT LIST SORTED BY ADDRESS
      Name                                      Addr   hSize   dSize     Ref    Section   RLIB
 ---------------------------------------------------------------------------------------------
-     _PORTAB                                      0       2       2       1   .abs_section_0
-     _DDRAB                                       2       2       2       2   .abs_section_2
+     _PORTAB                                      0       2       2      14   .abs_section_0
+     _DDRAB                                       2       2       2       4   .abs_section_2
      _PORTE                                       8       1       1       0   .abs_section_8
      _DDRE                                        9       1       1       0   .abs_section_9
      _PEAR                                        A       1       1       0   .abs_section_a
@@ -1738,9 +1756,9 @@ OBJECT LIST SORTED BY ADDRESS
      _PPSM                                      255       1       1       0   .abs_section_255
      _WOMM                                      256       1       1       0   .abs_section_256
      _MODRR                                     257       1       1       0   .abs_section_257
-     _PTP                                       258       1       1       0   .abs_section_258
+     _PTP                                       258       1       1       1   .abs_section_258
      _PTIP                                      259       1       1       0   .abs_section_259
-     _DDRP                                      25A       1       1       0   .abs_section_25a
+     _DDRP                                      25A       1       1       1   .abs_section_25a
      _RDRP                                      25B       1       1       0   .abs_section_25b
      _PERP                                      25C       1       1       0   .abs_section_25c
      _PPSP                                      25D       1       1       0   .abs_section_25d
@@ -1754,9 +1772,9 @@ OBJECT LIST SORTED BY ADDRESS
      _PPSH                                      265       1       1       0   .abs_section_265
      _PIEH                                      266       1       1       0   .abs_section_266
      _PIFH                                      267       1       1       0   .abs_section_267
-     _PTJ                                       268       1       1       2   .abs_section_268
+     _PTJ                                       268       1       1       3   .abs_section_268
      _PTIJ                                      269       1       1       0   .abs_section_269
-     _DDRJ                                      26A       1       1       2   .abs_section_26a
+     _DDRJ                                      26A       1       1       3   .abs_section_26a
      _RDRJ                                      26B       1       1       0   .abs_section_26b
      _PERJ                                      26C       1       1       0   .abs_section_26c
      _PPSJ                                      26D       1       1       0   .abs_section_26d
@@ -1825,20 +1843,28 @@ OBJECT LIST SORTED BY ADDRESS
      tempo                                     119C      9C     156       1   .data       
      underworld_melody                         1238      70     112       1   .data       
      underworld_tempo                          12A8      70     112       1   .data       
+     freLevel                                  1318       2       2       7   .bss        
+     column                                    131A       1       1       6   .common     
+     row                                       131B       1       1       3   .common     
+     showFre                                   131C       9       9       7   .common     
      _Startup                                  C000       B      11       0   .init       
-     _LINC                                     C015       5       5       1   NON_BANKED  
-     _lDivMod                                  C01A      BE     190       2   NON_BANKED  
-     _NEG_P                                    C0D8       F      15       4   NON_BANKED  
-     _LDIVS                                    C0E7      35      53       1   NON_BANKED  
-     _CASE_CHECKED_BYTE                        C11C      14      20       1   NON_BANKED  
+     keypad                                    C015      10      16       4   .rodata     
+     _LINC                                     C025       5       5       1   NON_BANKED  
+     _lDivMod                                  C02A      BE     190       2   NON_BANKED  
+     _NEG_P                                    C0E8       F      15       4   NON_BANKED  
+     _LDIVS                                    C0F7      35      53       1   NON_BANKED  
+     _CASE_CHECKED_BYTE                        C12C      14      20       1   NON_BANKED  
      Init                                    308000      29      41       2   .text       
-     main                                    308029      84     132       2   .text       
-     COMWRT4                                 3080AD      4B      75       4   .text       
-     DATWRT4                                 3080F8      4B      75       4   .text       
-     MSDelay                                 308143      1F      31      10   .text       
-     sing                                    308162      6D     109       6   .text       
-     buzz                                    3081CF      A1     161       2   .text       
-     MSDelayBuzz                             308270      1F      31       6   .text       
+     main                                    308029     168     360      20   .text       
+     COMWRT4                                 308191      4B      75       8   .text       
+     DATWRT4                                 3081DC      4B      75       2   .text       
+     MSDelay                                 308227      1F      31      12   .text       
+     sing                                    308246      6D     109       4   .text       
+     buzz                                    3082B3      AA     170       2   .text       
+     MSDelayBuzz                             30835D      1F      31       6   .text       
+     Int2Char                                30837C      1D      29       2   .text       
+     DisplayStr                              308399      31      49       2   .text       
+     CleanScr                                3083CA      1B      27       2   .text       
 
 *********************************************************************************************
 UNUSED-OBJECTS SECTION
@@ -1850,6 +1876,8 @@ rtshc12.c.o (ansibi.lib):
   _LMUL _LMULU16x32 _LMULS16x32 _LDIVU _LMODU _LMODS _ILSEXT _COPY _CASE_DIRECT 
   _CASE_DIRECT_BYTE _CASE_CHECKED _CASE_SEARCH _CASE_SEARCH_BYTE _CASE_SEARCH_8 
   _CASE_SEARCH_8_BYTE _FCALL _FPCMP 
+audio_processor_main.c.o:
+  DisplayInt 
 NOT USED VARIABLES
 rtshc12.c.o (ansibi.lib):
   _PowOfTwo_8 _PowOfTwo_16 _PowOfTwo_32 errno 
@@ -1859,75 +1887,75 @@ audio_processor_main.c.o:
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xC130 ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xC140 ---- SIZE       4 ---
 Filling bytes inserted
  02181100
-------- ROM-ADDRESS: 0xC134 ---- RAM-ADDRESS: 0x1100 ---- SIZE      18 ---
+------- ROM-ADDRESS: 0xC144 ---- RAM-ADDRESS: 0x1100 ---- SIZE      18 ---
 Name of initialized Object : melody
  0A4D0A4D00 000A4D0000 082D0A4D00
  000C40
-------- ROM-ADDRESS: 0xC146 ---- SIZE       6 ---
+------- ROM-ADDRESS: 0xC156 ---- SIZE       6 ---
 Filling bytes inserted
  0000000000 00
-------- ROM-ADDRESS: 0xC14C ---- RAM-ADDRESS: 0x1118 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC15C ---- RAM-ADDRESS: 0x1118 ---- SIZE       2 ---
 Name of initialized Object : melody:24
  0620
-------- ROM-ADDRESS: 0xC14E ---- SIZE       6 ---
+------- ROM-ADDRESS: 0xC15E ---- SIZE       6 ---
 Filling bytes inserted
  0000000000 00
-------- ROM-ADDRESS: 0xC154 ---- RAM-ADDRESS: 0x1120 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC164 ---- RAM-ADDRESS: 0x1120 ---- SIZE       2 ---
 Name of initialized Object : melody:32
  082D
-------- ROM-ADDRESS: 0xC156 ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xC166 ---- SIZE       4 ---
 Filling bytes inserted
  00000000
-------- ROM-ADDRESS: 0xC15A ---- RAM-ADDRESS: 0x1126 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC16A ---- RAM-ADDRESS: 0x1126 ---- SIZE       2 ---
 Name of initialized Object : melody:38
  0620
-------- ROM-ADDRESS: 0xC15C ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xC16C ---- SIZE       4 ---
 Filling bytes inserted
  00000000
-------- ROM-ADDRESS: 0xC160 ---- RAM-ADDRESS: 0x112C ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC170 ---- RAM-ADDRESS: 0x112C ---- SIZE       2 ---
 Name of initialized Object : melody:44
  0527
-------- ROM-ADDRESS: 0xC162 ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xC172 ---- SIZE       4 ---
 Filling bytes inserted
  00000000
-------- ROM-ADDRESS: 0xC166 ---- RAM-ADDRESS: 0x1132 ---- SIZE      40 ---
+------- ROM-ADDRESS: 0xC176 ---- RAM-ADDRESS: 0x1132 ---- SIZE      40 ---
 Name of initialized Object : melody:50
  06E0000007 B800000749 06E0000006
  200A4D0C40 0DC000000A EA0C400000
  0A4D000008 2D092D07B8
-------- ROM-ADDRESS: 0xC18E ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xC19E ---- SIZE       4 ---
 Filling bytes inserted
  00000000
-------- ROM-ADDRESS: 0xC192 ---- RAM-ADDRESS: 0x115E ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC1A2 ---- RAM-ADDRESS: 0x115E ---- SIZE       2 ---
 Name of initialized Object : melody:94
  082D
-------- ROM-ADDRESS: 0xC194 ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xC1A4 ---- SIZE       4 ---
 Filling bytes inserted
  00000000
-------- ROM-ADDRESS: 0xC198 ---- RAM-ADDRESS: 0x1164 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC1A8 ---- RAM-ADDRESS: 0x1164 ---- SIZE       2 ---
 Name of initialized Object : melody:100
  0620
-------- ROM-ADDRESS: 0xC19A ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xC1AA ---- SIZE       4 ---
 Filling bytes inserted
  00000000
-------- ROM-ADDRESS: 0xC19E ---- RAM-ADDRESS: 0x116A ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC1AE ---- RAM-ADDRESS: 0x116A ---- SIZE       2 ---
 Name of initialized Object : melody:106
  0527
-------- ROM-ADDRESS: 0xC1A0 ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xC1B0 ---- SIZE       4 ---
 Filling bytes inserted
  00000000
-------- ROM-ADDRESS: 0xC1A4 ---- RAM-ADDRESS: 0x1170 ---- SIZE      40 ---
+------- ROM-ADDRESS: 0xC1B4 ---- RAM-ADDRESS: 0x1170 ---- SIZE      40 ---
 Name of initialized Object : melody:112
  06E0000007 B800000749 06E0000006
  200A4D0C40 0DC000000A EA0C400000
  0A4D000008 2D092D07B8
-------- ROM-ADDRESS: 0xC1CC ---- SIZE       5 ---
+------- ROM-ADDRESS: 0xC1DC ---- SIZE       5 ---
 Filling bytes inserted
  0000000000
-------- ROM-ADDRESS: 0xC1D1 ---- RAM-ADDRESS: 0x119D ---- SIZE     155 ---
+------- ROM-ADDRESS: 0xC1E1 ---- RAM-ADDRESS: 0x119D ---- SIZE     155 ---
 Name of initialized Object : tempo:1
  0C000C000C 000C000C00 0C000C000C
  000C000C00 0C000C000C 000C000C00
@@ -1940,39 +1968,39 @@ Name of initialized Object : tempo:1
  0C000C000C 0009000900 09000C000C
  000C000C00 0C000C000C 000C000C00
  0C000C000C
-------- ROM-ADDRESS: 0xC26C ---- RAM-ADDRESS: 0x1238 ---- SIZE      12 ---
+------- ROM-ADDRESS: 0xC27C ---- RAM-ADDRESS: 0x1238 ---- SIZE      12 ---
 Name of initialized Object : underworld_melody
  0106020B00 DC01B800E9 01D2
-------- ROM-ADDRESS: 0xC278 ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xC288 ---- SIZE       4 ---
 Filling bytes inserted
  00000000
-------- ROM-ADDRESS: 0xC27C ---- RAM-ADDRESS: 0x1248 ---- SIZE      12 ---
+------- ROM-ADDRESS: 0xC28C ---- RAM-ADDRESS: 0x1248 ---- SIZE      12 ---
 Name of initialized Object : underworld_melody:16
  0106020B00 DC01B800E9 01D2
-------- ROM-ADDRESS: 0xC288 ---- SIZE       5 ---
-Filling bytes inserted
- 0000000000
-------- ROM-ADDRESS: 0xC28D ---- RAM-ADDRESS: 0x1259 ---- SIZE      11 ---
-Name of initialized Object : underworld_melody:33
- AF015D0093 0126009C01 37
 ------- ROM-ADDRESS: 0xC298 ---- SIZE       5 ---
 Filling bytes inserted
  0000000000
-------- ROM-ADDRESS: 0xC29D ---- RAM-ADDRESS: 0x1269 ---- SIZE      11 ---
+------- ROM-ADDRESS: 0xC29D ---- RAM-ADDRESS: 0x1259 ---- SIZE      11 ---
+Name of initialized Object : underworld_melody:33
+ AF015D0093 0126009C01 37
+------- ROM-ADDRESS: 0xC2A8 ---- SIZE       5 ---
+Filling bytes inserted
+ 0000000000
+------- ROM-ADDRESS: 0xC2AD ---- RAM-ADDRESS: 0x1269 ---- SIZE      11 ---
 Name of initialized Object : underworld_melody:49
  AF015D0093 0126009C01 37
-------- ROM-ADDRESS: 0xC2A8 ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xC2B8 ---- SIZE       4 ---
 Filling bytes inserted
  00000000
-------- ROM-ADDRESS: 0xC2AC ---- RAM-ADDRESS: 0x1278 ---- SIZE      42 ---
+------- ROM-ADDRESS: 0xC2BC ---- RAM-ADDRESS: 0x1278 ---- SIZE      42 ---
 Name of initialized Object : underworld_melody:64
  0137011501 2601150137 013700D000
  C401150106 0172015D00 A501D201B8
  019F013700 F700E900DC 00D0
-------- ROM-ADDRESS: 0xC2D6 ---- SIZE       7 ---
+------- ROM-ADDRESS: 0xC2E6 ---- SIZE       7 ---
 Filling bytes inserted
  0000000000 0000
-------- ROM-ADDRESS: 0xC2DD ---- RAM-ADDRESS: 0x12A9 ---- SIZE     111 ---
+------- ROM-ADDRESS: 0xC2ED ---- RAM-ADDRESS: 0x12A9 ---- SIZE     111 ---
 Name of initialized Object : underworld_tempo:1
  0C000C000C 000C000C00 0C00060003
  000C000C00 0C000C000C 000C000600
@@ -1982,7 +2010,7 @@ Name of initialized Object : underworld_tempo:1
  0006000600 0600120012 0012001200
  120012000A 000A000A00 0A000A000A
  0003000300 03
-------- ROM-ADDRESS: 0xC34C ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC35C ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -1992,14 +2020,18 @@ OBJECT-DEPENDENCIES SECTION
 _Startup                  USES __SEG_END_SSTACK Init main 
 _LDIVS                    USES _NEG_P _lDivMod 
 Init                      USES _startupData 
-main                      USES _DDRK COMWRT4 MSDelay DATWRT4 _DDRT _DDRAB 
-                                _DDRJ _PTJ sing 
+main                      USES showFre _DDRK COMWRT4 main _DDRT _DDRAB _DDRJ 
+                                _PTJ _DDRP _PTP _PORTAB column row keypad freLevel 
+                                sing MSDelay Int2Char DisplayStr 
 COMWRT4                   USES _PORTK MSDelay 
 DATWRT4                   USES _PORTK MSDelay 
 sing                      USES tempo melody underworld_tempo underworld_melody 
                                 buzz MSDelayBuzz 
-buzz                      USES _LDIVS _CASE_CHECKED_BYTE _PORTAB _PTT 
+buzz                      USES freLevel _LDIVS _CASE_CHECKED_BYTE _PORTAB _PTT 
                                 MSDelayBuzz _LINC 
+Int2Char                  USES freLevel showFre 
+DisplayStr                USES CleanScr DATWRT4 MSDelay 
+CleanScr                  USES COMWRT4 MSDelay 
 
 *********************************************************************************************
 DEPENDENCY TREE
@@ -2012,29 +2044,41 @@ DEPENDENCY TREE
  |  |  | 
  |  |  +- MSDelay             
  |  |       
+ |  +- sing                
+ |  |  | 
+ |  |  +- buzz                
+ |  |  |  | 
+ |  |  |  +- _LDIVS              
+ |  |  |  |  | 
+ |  |  |  |  +- _NEG_P              
+ |  |  |  |  |    
+ |  |  |  |  +- _lDivMod            
+ |  |  |  |       
+ |  |  |  +- _CASE_CHECKED_BYTE  
+ |  |  |  |    
+ |  |  |  +- MSDelayBuzz         
+ |  |  |  |    
+ |  |  |  +- _LINC               
+ |  |  |       
+ |  |  +- MSDelayBuzz          (see above)
+ |  |     
  |  +- MSDelay              (see above)
  |  |  
- |  +- DATWRT4             
- |  |  | 
- |  |  +- MSDelay              (see above)
- |  |     
- |  +- sing                
+ |  +- Int2Char            
+ |  |    
+ |  +- DisplayStr          
  |     | 
- |     +- buzz                
+ |     +- CleanScr            
  |     |  | 
- |     |  +- _LDIVS              
- |     |  |  | 
- |     |  |  +- _NEG_P              
- |     |  |  |    
- |     |  |  +- _lDivMod            
- |     |  |       
- |     |  +- _CASE_CHECKED_BYTE  
- |     |  |    
- |     |  +- MSDelayBuzz         
- |     |  |    
- |     |  +- _LINC               
- |     |       
- |     +- MSDelayBuzz          (see above)
+ |     |  +- COMWRT4              (see above)
+ |     |  |  
+ |     |  +- MSDelay              (see above)
+ |     |     
+ |     +- DATWRT4             
+ |     |  | 
+ |     |  +- MSDelay              (see above)
+ |     |     
+ |     +- MSDelay              (see above)
  |        
  +- _Startup            
     | 
@@ -2049,5 +2093,5 @@ STATISTIC SECTION
 ExeFile:
 --------
 Number of blocks to be downloaded: 6
-Total size of all blocks to be downloaded: 1503
+Total size of all blocks to be downloaded: 1861
 
